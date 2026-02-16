@@ -45,20 +45,47 @@ class HeatitWiFi6API:
         return {}
 
 
-    async def _post(self, endpoint, data, timeout=5):  # simple general http-post
+    async def _post(self, endpoint, data, timeout=15, retries=2):  # simple general http-post with retries
         url = f"{self.__host}{endpoint}"
         _LOGGER.debug("aiohttp - Post url: %s", url)
 
-        try:
-            async with aiohttp.TCPConnector(ssl=TLS_CHECK, resolver=aiohttp.resolver.ThreadedResolver()) as conn:
-                async with aiohttp.ClientSession(connector=conn, trust_env=False) as session:
-                    async with session.post(url, json=data, timeout=aiohttp.ClientTimeout(total=timeout)) as response:
-                        text = await response.text()
-                        _LOGGER.debug(f"Response (post %s) data:\n%s", url, str(text))
-                        return await self._parse_json(text)
-        except Exception as e:
-            _LOGGER.error("POST %s failed: %s", url, str(e))
-            return {}
+        for attempt in range(retries + 1):
+            try:
+                async with aiohttp.TCPConnector(ssl=TLS_CHECK, resolver=aiohttp.resolver.ThreadedResolver()) as conn:
+                    async with aiohttp.ClientSession(connector=conn, trust_env=False) as session:
+                        async with session.post(url, json=data, timeout=aiohttp.ClientTimeout(total=timeout)) as response:
+                            text = await response.text()
+                            _LOGGER.debug("Response (post %s) data:\n%s", url, str(text))
+                            return await self._parse_json(text)
+            except (asyncio.TimeoutError, aiohttp.ClientError) as e:
+                if attempt < retries:
+                    wait_time = (attempt + 1) * 2
+                    _LOGGER.warning(
+                        "POST %s failed (attempt %d/%d), retrying in %ds... Error: %s",
+                        url, attempt + 1, retries + 1, wait_time, str(e)
+                    )
+                    await asyncio.sleep(wait_time)
+                else:
+                    _LOGGER.error(
+                        "POST %s failed after %d attempts. Error: %s",
+                        url, retries + 1, str(e)
+                    )
+                    return {}
+            except Exception as e:
+                if attempt < retries:
+                    wait_time = (attempt + 1) * 2
+                    _LOGGER.warning(
+                        "POST %s failed (attempt %d/%d): %s. Retrying in %ds...",
+                        url, attempt + 1, retries + 1, str(e), wait_time
+                    )
+                    await asyncio.sleep(wait_time)
+                else:
+                    _LOGGER.error(
+                        "POST %s failed after %d attempts: %s",
+                        url, retries + 1, str(e)
+                    )
+                    return {}
+        return {}
 
 
     async def _delete(self, endpoint, timeout=5):  # simple general http-delete
@@ -111,7 +138,7 @@ class HeatitWiFi6API:
         _LOGGER.info("set_parameter(%s, %s) - Set parameter to the thermostat..", parameter, value)
 
         data = {parameter: value}
-        response = await self._post(API_PARAMETERS.rstrip("/"), data)
+        response = await self._post(API_PARAMETERS.rstrip("/"), data, timeout=20, retries=3)
 
         if response and response.get("status", "Failed") == "Success":
             _LOGGER.debug(f"set_parameter({parameter, value}): {response.get("value", "Success, but no value of response: %s")}", str(response))
