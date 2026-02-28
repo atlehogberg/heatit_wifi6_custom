@@ -41,5 +41,29 @@ This software was made by 3rd party. The device manufacturer ("Heatit") has no a
 * 0.9.3
     * Initial Release
 
+## Branding / Ikon i HA og HACS
+
+Ikonet som vises i **Integrasjonslisten** i Home Assistant og i **HACS** hentes **ikke** fra integrasjonens egen mappe. Home Assistant bruker en felles tjeneste og henter alltid ikoner fra:
+
+- `https://brands.home-assistant.io/{domain}/icon.png`
+
+For denne integrasjonen er domain `heatit_wifi6_custom`. Derfor vil et lokalt `brands`-katalog under `custom_components` **ikke** bli brukt av HA eller HACS.
+
+### Slik får du ikon til å vises
+
+1. **Legg inn branding i det offisielle brands-repoet**  
+   Send en [Pull Request til home-assistant/brands](https://github.com/home-assistant/brands) med ikonene i mappen:
+   - `custom_integrations/heatit_wifi6_custom/`
+
+2. **Filer du trenger (minst)**  
+   - `icon.png` – firkantet ikon **256×256 px**, PNG, 1:1
+
+   Valgfritt: `logo.png`, `icon@2x.png` (512×512), `dark_icon.png` osv. – se [brands README](https://github.com/home-assistant/brands#readme) for alle krav.
+
+3. **Etter at PR er merget**  
+   Ikonet vil vises i HA og HACS. Det kan ta inntil 24 timer pga. caching hos brands.home-assistant.io.
+
+Kort sagt: For at ikonet skal vises, må det ligge i **home-assistant/brands** under `custom_integrations/heatit_wifi6_custom/`, ikke i dette repoet.
+
 ## License
 This software is licensed under MIT License.
