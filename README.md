@@ -1,87 +1,58 @@
-# ⚠️ DEPRECATED ⚠️
+# ⚠️ DEPRECATED — use the official integration
 
-**This custom integration is no longer maintained.**
+**This repository is archived and no longer maintained.**
 
-All features and updates from this repository have been merged into the official integration:
-👉 **[mattik-gh/heatit_wifi6](https://github.com/mattik-gh/heatit_wifi6)**
+All improvements from this fork (Eco preset, mode attributes, staggered startup, and related fixes) are available in the official integration:
+
+**→ [mattik-gh/heatit_wifi6](https://github.com/mattik-gh/heatit_wifi6)**
+
+Do **not** install this repository in HACS.
 
 ---
 
-## Migration Guide for Current Users
+## Migrate to `mattik-gh/heatit_wifi6`
 
-If you are currently using this custom integration, please switch to the official repository by following these steps:
+This fork used the Home Assistant domain `heatit_wifi6_custom`. The official integration uses `heatit_wifi6`.  
+To keep existing `climate.*` entity IDs (and avoid `*_2` duplicates), remove the old config entries **before** adding the official ones again with the **same name and host**.
 
-1. **Remove this integration from Home Assistant / HACS:**
-   * Go to **HACS** > **Integrations**.
-   * Find **Heatit WiFi6 Custom** (or this repository).
-   * Click the three dots and select **Remove**.
-2. **Remove as Custom Repository (if applicable):**
-   * In HACS, click the three dots in the top right corner > **Custom repositories**.
-   * Delete `atlehogberg/heatit_wifi6_custom` from the list.
-3. **Install the Official Integration:**
-   * Go to **HACS** > **Integrations**.
-   * Search for **Heatit WiFi6** (from `mattik-gh/heatit_wifi6`).
-   * Download and install it.
-4. **Restart Home Assistant.**
+### Recommended order
 
-Thank you to everyone who tested and contributed to this fork!
+1. **Note each thermostat’s exact `name` and `host`**  
+   (Settings → Devices & services → each Heatit WiFi6 Custom entry.)
+2. **Delete all `heatit_wifi6_custom` config entries**  
+   (Do this first — do not install the official integration in parallel.)
+3. **Remove this fork from HACS**  
+   - HACS → Integrations → remove **Heatit WiFi6 Custom** (if listed)  
+   - HACS → Custom repositories → remove `atlehogberg/heatit_wifi6_custom`
+4. **Install the official integration**  
+   - Prefer HACS: add/install [mattik-gh/heatit_wifi6](https://github.com/mattik-gh/heatit_wifi6)  
+   - Or vendor `custom_components/heatit_wifi6` from that repo
+5. **Restart Home Assistant**
+6. **Add each thermostat again** with the **exact same `name` and `host`** as before  
+   (Name controls the `climate.*` entity_id slug.)
+7. **Verify**  
+   - Same number of climate entities as before  
+   - No new `climate.*_2` entities  
+   - Platform is `heatit_wifi6`
 
+If a device still got a `*_2` entity_id, rename it back in the UI and remove any leftover unavailable orphans.
 
+YAML automations/scripts that already use your `climate.*` entity IDs should keep working when names/hosts match.
 
-ORIGINAL README.md below:
+Thank you to everyone who tested and contributed to this fork.
 
+---
 
-# Heatit WiFi6 Integration for Home Assistant
+## Historical note
 
-This integration provides support for Heatit WiFi6 thermostats in Home Assistant. 
-The device is also sold under various other names depending on the region, such as "Älytermostaatti Pistesarjat WiFi6" in Finland.
+This was a temporary fork of [mattik-gh/heatit_wifi6](https://github.com/mattik-gh/heatit_wifi6) used while Eco mode, attributes, and startup congestion fixes were developed and upstreamed. Development continues only in the official repository.
 
-## Disclaimer
-This software is a third-party integration and is not affiliated with, maintained, or supported by Heatit (Thermo-Floor AS). Use it at your own risk.
+### Last release on this fork
 
-## Supported Devices
-* Heatit WiFi6 Thermostat (Firmware v2.20 and newer)
-
-## Installation
-
-### Method 1: HACS (Recommended)
-1. Ensure [HACS](https://hacs.xyz/) is installed.
-2. Go to **HACS** -> **Integrations**.
-3. Click the three dots in the top right corner and select **Custom repositories**.
-4. Add the URL to this repository, select **Integration** as the category, and click **Add**.
-5. Find "Heatit WiFi6" in the list and click **Install**.
-6. Restart Home Assistant.
-
-### Method 2: Manual Installation
-1. Download the `heatit_wifi6` folder from `custom_components/` in this repository.
-2. Copy the folder into your Home Assistant `config/custom_components/` directory.
-3. Restart Home Assistant.
-
-## Setup
-1. Ensure your thermostat is connected to your local WiFi network via the official Heatit mobile app.
-2. In Home Assistant, go to **Settings** -> **Devices & Services** -> **Add Integration**.
-3. Search for **Heatit WiFi6**.
-4. Enter a descriptive name for your device.
-5. Enter the local IP address of the thermostat (e.g., `http://192.168.1.50`).
-6. Submit the configuration.
-
-## Features & Usage
-* **Sensor Modes:** Supports Floor, Internal, and External sensor modes. The current temperature entity automatically reflects the active sensor mode.
-* **Attributes:** Detailed thermostat parameters are exposed as device attributes.
-* **Polling:** The integration polls the device once per minute for status updates.
-* **Advanced Control:** Parameters can be changed via HTTP POST requests to `/api/parameters` on the device. For technical details, refer to the OpenAPI documentation in the `docs` folder.
-* **Energy Meter:** Reset the kWh meter by sending a DELETE request to `/api/reset/kwh` on the device.
-
-## Version History
-* **1.1.2**
-    * Prepared for official PR.
-    * Synchronized domain and logic for better compatibility.
-* **1.1.1**
-    * Enhanced stability and logic improvements.
-* **0.9.4**
-    * Current temperature is now dynamically based on the **sensorMode** configured on the device (Floor, Internal, or External).
-* **0.9.3**
-    * Initial Release
+* **1.1.2** — Prepared for upstream merge; domain/logic aligned for compatibility  
+* **1.1.1** — Stability and logic improvements  
+* Earlier 0.9.x releases — initial fork work (dynamic `sensorMode` temperature, etc.)
 
 ## License
-This software is licensed under the [MIT License](LICENSE.md).
+
+[MIT License](LICENSE.md) — third-party software, not affiliated with Heatit (Thermo-Floor AS).
