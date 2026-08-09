@@ -1,3 +1,36 @@
+# ⚠️ DEPRECATED ⚠️
+
+**This custom integration is no longer maintained.**
+
+All features and updates from this repository have been merged into the official integration:
+👉 **[mattik-gh/heatit_wifi6](https://github.com/mattik-gh/heatit_wifi6)**
+
+---
+
+## Migration Guide for Current Users
+
+If you are currently using this custom integration, please switch to the official repository by following these steps:
+
+1. **Remove this integration from Home Assistant / HACS:**
+   * Go to **HACS** > **Integrations**.
+   * Find **Heatit WiFi6 Custom** (or this repository).
+   * Click the three dots and select **Remove**.
+2. **Remove as Custom Repository (if applicable):**
+   * In HACS, click the three dots in the top right corner > **Custom repositories**.
+   * Delete `atlehogberg/heatit_wifi6_custom` from the list.
+3. **Install the Official Integration:**
+   * Go to **HACS** > **Integrations**.
+   * Search for **Heatit WiFi6** (from `mattik-gh/heatit_wifi6`).
+   * Download and install it.
+4. **Restart Home Assistant.**
+
+Thank you to everyone who tested and contributed to this fork!
+
+
+
+ORIGINAL README.md below:
+
+
 # Heatit WiFi6 Integration for Home Assistant
 
 This integration provides support for Heatit WiFi6 thermostats in Home Assistant. 
